@@ -1,14 +1,20 @@
 const http = require('http');
-const server = http.createServer((req, res)=>{
-  console.log('request header:', req.headers);
-  const userAgent = req.headers['user-agent'];
-  const acceptLanguage = req.headers['accept-language'];
+const url = require('url');
 
-  res.writeHead(200, {'content-type': 'text/plain'});
-  res.end(`User-Agent: ${userAgent}\nAccept-Language: ${acceptLanguage}`);
 
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+
+  const pathname= parsedUrl.pathname;
+  const query = parsedUrl.query;
+
+  res.writeHead(200, {'content-type':'application/json'});
+  res.end(JSON.stringify({
+    pathname,
+    query,
+    fullUrl: req.url
+  }, null,2));
 });
-
 server.listen(3000, ()=>{
-  console.log('server is sunning on http://localhost:3000/');
-})
+  console.log(`server i srunning on http://localhost:3000/`);
+});

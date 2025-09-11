@@ -1,14 +1,14 @@
 const http = require('http');
-
 const server = http.createServer((req, res)=>{
-  res.writeHead(200, {
-    'Content-type': 'text/html',
-    'X-Powered-By': 'Node.js',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Set-Cookie': 'sessionid=abc123; HttpOnly'
-  });
-  res.end('<h1>hello world</h1>');
+  console.log('request header:', req.headers);
+  const userAgent = req.headers['user-agent'];
+  const acceptLanguage = req.headers['accept-language'];
+
+  res.writeHead(200, {'content-type': 'text/plain'});
+  res.end(`User-Agent: ${userAgent}\nAccept-Language: ${acceptLanguage}`);
+
 });
+
 server.listen(3000, ()=>{
-  console.log('server is running in http://localhost:3000/');
-});
+  console.log('server is sunning on http://localhost:3000/');
+})

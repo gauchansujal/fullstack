@@ -1,3 +1,4 @@
 # Ignore SSL keys and certificates
 key.pem
 cert.pem
+san.cnf

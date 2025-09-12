@@ -1,20 +1,30 @@
 const http = require('http');
-const url = require('url');
-
+const { URL } = require('url');
+const querystring = require('querystring');
 
 const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
+  // Using the newer URL API (Node.js 10+)
+  const baseURL = 'http://' + req.headers.host + '/';   const parsedUrl = new URL(req.url, baseURL);
 
-  const pathname= parsedUrl.pathname;
-  const query = parsedUrl.query;
+  // Get query parameters
+  const params = Object.fromEntries(parsedUrl.searchParams);
 
-  res.writeHead(200, {'content-type':'application/json'});
+  // Example of building a query string
+  const queryObj = {
+    name: 'John Doe',
+    age: 30,
+    interests: ['programming', 'music']
+  };
+  const queryStr = querystring.stringify(queryObj);
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
-    pathname,
-    query,
-    fullUrl: req.url
-  }, null,2));
+    path: parsedUrl.pathname,
+    params,
+    exampleQueryString: queryStr
+  }, null, 2));
 });
+
 server.listen(3000, ()=>{
-  console.log(`server i srunning on http://localhost:3000/`);
+  console.log('server is running in http://localhost:3000/');
 });

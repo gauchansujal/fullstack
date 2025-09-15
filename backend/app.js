@@ -1,62 +1,69 @@
 const https = require('https');
 const { URL } = require('url');
 
-// Parse the URL
-const url = new URL('https://jsonplaceholder.typicode.com/posts/1');
+// Request data
+const postData = JSON.stringify({
+  title: 'foo',
+  body: 'bar',
+  userId: 1
+});
 
-// Request options const options = {
+// Parse the URL
+const url = new URL('https://jsonplaceholder.typicode.com/posts');
+
+// Request options
+const options = {
   hostname: url.hostname,
+  port: 443,
   path: url.pathname,
-  method: 'GET',
+  method: 'POST',
   headers: {
-    'Accept': 'application/json',
-    'User-Agent': 'MySecureApp/1.0'
-  }
+    'Content-Type': 'application/json',
+    'Content-Length': Buffer.byteLength(postData),
+    'User-Agent': 'MySecureApp/1.0',
+    'Accept': 'application/json'
+  },
+  timeout: 10000 // 10 seconds
 };
 
-console.log(`Fetching data from: ${url}`);
+console.log('Sending POST request to:', url.toString());
 
-// Make the GET request const req = https.get(options, (res) => {
-  const { statusCode } = res;
-  const contentType = res.headers['content-type'];
+// Create the request
+const req = https.request(options, (res) => {
+  console.log(`Status Code: ${res.statusCode}`);
+  console.log('Headers:', res.headers);
 
-  if (statusCode !== 200) {
-    console.error(`Request failed with status code: ${statusCode}`);
-    res.resume(); // Consume response data to free up memory
-    return;
-  }
-
-  if (!/^application\/json/.test(contentType)) {
-    console.error(`Expected JSON but got ${contentType}`);
-    res.resume();
-    return;
-  }
-
-  let rawData = '';
+  let responseData = '';
   res.setEncoding('utf8');
 
-  // Collect data chunks
-  res.on('data', (chunk) => {     rawData += chunk;
+  // Collect response data
+  res.on('data', (chunk) => {
+    responseData += chunk;
   });
 
   // Process complete response
   res.on('end', () => {
     try {
-      const parsedData = JSON.parse(rawData);
-      console.log('Received data:', parsedData);
+      const parsedData = JSON.parse(responseData);
+      console.log('Response:', parsedData);
     } catch (e) {
-      console.error('Error parsing JSON:', e.message);
+      console.error('Error parsing response:', e.message);
     }
   });
 });
 
 // Handle errors
 req.on('error', (e) => {
-  console.error(`Error: ${e.message}`);
+  console.error(`Request error: ${e.message}`);
 });
 
 // Set a timeout
-req.setTimeout(10000, () => {
-  console.error('Request timeout');
-  req.destroy();
+req.setTimeout(15000, () => {
+  req.destroy(new Error('Request timeout after 15 seconds'));
 });
+
+// Write data to request body
+req.write(postData);
+
+// End the request
+req.end();

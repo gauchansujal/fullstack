@@ -1,14 +1,13 @@
-const fs = require('fs');
-fs. readFile('my.text', 'utf8', (err, data)=>{
-  if (err){
-    console.error('error reading file : ', err);
-    return;
+const { promisify } = require('util');
+const readFileAsync = promisify(require('fs').readFile);
+
+async function readWithPromisify() {
+  try {
+    const data = await readFileAsync('my.text', 'utf8');
+    console.log(data);
+  } catch (err) {
+    console.error(err);
   }
-  console.log('file content:', data);
+}
 
-});
-
-fs.readFile('image.png',(err, data)=>{
-  if(err) throw err;
-  console.log('image size:', data.length, 'bytes');
-});
+readWithPromisify();

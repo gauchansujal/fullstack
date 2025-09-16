@@ -1,17 +1,26 @@
-require('dotenv').config();
-const fs = require('fs'); 
-const https = require('https');
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || '127.0.0.1';
-const sslOptions ={
-  key: fs.readFileSync(process.env.SSL_KEY_PATH),
-  cert:fs.readFileSync(process.env.SSL_CERT_PATH)
-};
+const express = require('express');
+const spdy = require('spdy');
+const fs = require('fs');
+const path = require('path');
 
-https.createServer(sslOptions, (req, res)=>{
-  res.writeHead(200, {'content_type': "text/plain"});
-  res.end("hello, http with .env variables");
-}).listen(PORT, HOST, ()=>{
-  console.log(`server running on https://${HOST}:${PORT}`);
+const app = express();
+
+app.get('/', (req, res)=>{
+  res.send('hello from express over http/2');
 });
 
+const options ={
+  key : fs.readFileSync(path.join(__dirname, 'key.pem')),
+  cert : fs.readFileSync(path.join(__dirname, 'cert.pem')),
+  spdy:{
+
+    protocols: ['h2', 'https/1.1'],
+     plain : false,
+  'x-forwarded-for': true
+  }
+ 
+};
+const PORT = process.env.PORT || 3000;
+spdy.createServer(options, app).listen(PORT,()=>{
+  console.log(`express server with http/2 running on port ${PORT}`);
+});

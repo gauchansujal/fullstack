@@ -1,12 +1,24 @@
 const fs = require('fs').promises;
-async function appendToFile(){
-  try{
-    const logEntry = `${new Date().toISOString()}: application started\n`;
-    await fs.appendFile('app.log', logEntry, 'utf8');
+async function writeWithFileHandle(){
+  let fileHandle;
 
-    console.log('log entry added');
+  try{
+    fileHandle = await fs.open('my.text', 'w');
+
+    await fileHandle.write('first line\n');
+    await fileHandle.write('second line\n');
+    await fileHandle.write('third line\n');
+
+    console.log('content written sucessfully');
 
   }catch(err){
-    console.log('error appending to file:', err);
+    console.error('error writteing to file:', err);
+
+  }finally{
+    if(fileHandle){
+      await fileHandle.close();
+    }
   }
-}appendToFile();
+}
+
+writeWithFileHandle();

@@ -1,22 +1,19 @@
-const fs = require('fs');
-const { pipeline } = require('stream/promises');
-const { Readable } = require('stream');
+const fs = require('fs').promises;
 
-async function writeLargeFile() {
-  // Create a readable stream (could be from HTTP request, etc.)
-  const data = Array(1000).fill().map((_, i) => `Line ${i + 1}: ${'x'.repeat(100)}\n`);
-  const readable = Readable.from(data);
+async function deleteFile(){
+  const filePath = 'large-file.txt';
+  try{
+    await fs.access(filePath);
 
-  // Create a writable stream to a file
-  const writable = fs.createWriteStream('large-file.txt');
+    await fs.unlink(filePath);
+    console.log('file deleted sucesfully');
 
-  try {
-    // Pipe the data from readable to writable
-    await pipeline(readable, writable);
-    console.log('Large file written successfully');
-  } catch (err) {
-    console.error('Error writing file:', err);
+  }catch(err){
+    if(err.code ==='ENOENT'){
+      console.log('file does not exist');
+    }else {
+      console.log('error deleting file :', err);
+    }
   }
 }
-
-writeLargeFile();
+deleteFile();

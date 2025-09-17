@@ -1,13 +1,15 @@
-const { promisify } = require('util');
-const readFileAsync = promisify(require('fs').readFile);
+const fs = require('fs').promises;
 
-async function readWithPromisify() {
+async function writeFileExample() {
   try {
-    const data = await readFileAsync('my.text', 'utf8');
-    console.log(data);
+    await fs.writeFile('my.text', 'hello world', 'utf8');
+    const data = { name: 'jhon', age: 30, city: 'New york' };
+    await fs.writeFile('data.json', JSON.stringify(data, null, 2), 'utf8');
+
+    console.log('files created successfully');
   } catch (err) {
-    console.error(err);
+    console.log('error writing files:', err);
   }
 }
 
-readWithPromisify();
+writeFileExample();

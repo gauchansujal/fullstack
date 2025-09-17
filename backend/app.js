@@ -1,24 +1,22 @@
-const fs = require('fs').promises;
-async function writeWithFileHandle(){
-  let fileHandle;
+const fs = require('fs');
+const { pipeline } = require('stream/promises');
+const { Readable } = require('stream');
 
-  try{
-    fileHandle = await fs.open('my.text', 'w');
+async function writeLargeFile() {
+  // Create a readable stream (could be from HTTP request, etc.)
+  const data = Array(1000).fill().map((_, i) => `Line ${i + 1}: ${'x'.repeat(100)}\n`);
+  const readable = Readable.from(data);
 
-    await fileHandle.write('first line\n');
-    await fileHandle.write('second line\n');
-    await fileHandle.write('third line\n');
+  // Create a writable stream to a file
+  const writable = fs.createWriteStream('large-file.txt');
 
-    console.log('content written sucessfully');
-
-  }catch(err){
-    console.error('error writteing to file:', err);
-
-  }finally{
-    if(fileHandle){
-      await fileHandle.close();
-    }
+  try {
+    // Pipe the data from readable to writable
+    await pipeline(readable, writable);
+    console.log('Large file written successfully');
+  } catch (err) {
+    console.error('Error writing file:', err);
   }
 }
 
-writeWithFileHandle();
+writeLargeFile();

@@ -1,31 +1,26 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-async function deleteDirectory(dirPath) {
+async function emptyDirectory(dirPath) {
   try {
-    // Check if the directory exists
-    const stats = await fs.stat(dirPath);
-   
-    if (!stats.isDirectory()) {
-      console.log('Path is not a directory');
-      return;
-    }
+    // Read the directory
+    const files = await fs.readdir(dirPath, { withFileTypes: true });
 
-    // For Node.js 14.14.0+ (recommended)
-    await fs.rm(dirPath, { recursive: true, force: true });
+    // Delete all files and directories in parallel
+    await Promise.all(
+      files.map(file => {
+        const fullPath = path.join(dirPath, file.name);
+        return file.isDirectory()
+          ? fs.rm(fullPath, { recursive: true, force: true })
+          : fs.unlink(fullPath);
+      })
+    );
 
-    // For older Node.js versions (deprecated but still works)
-    // await fs.rmdir(dirPath, { recursive: true });
-
-    console.log('Directory deleted successfully');
+    console.log('Directory emptied successfully');
   } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.log('Directory does not exist');
-    } else {
-      console.error('Error deleting directory:', err);
-    }
+    console.error('Error emptying directory:', err);
   }
 }
 
 // Usage
-deleteDirectory('directory-to-delete');
+emptyDirectory('directory-to-empty');

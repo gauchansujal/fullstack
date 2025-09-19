@@ -1,26 +1,33 @@
 const fs = require('fs').promises;
-const path = require('path');
 
-async function emptyDirectory(dirPath) {
+async function renameFile() {
+  const oldPath = 'my.text';
+  const newPath = 'myy.text';
+
   try {
-    // Read the directory
-    const files = await fs.readdir(dirPath, { withFileTypes: true });
+    // Check if source file exists
+    await fs.access(oldPath);
 
-    // Delete all files and directories in parallel
-    await Promise.all(
-      files.map(file => {
-        const fullPath = path.join(dirPath, file.name);
-        return file.isDirectory()
-          ? fs.rm(fullPath, { recursive: true, force: true })
-          : fs.unlink(fullPath);
-      })
-    );
+    // Check if destination file already exists
+    try {
+      await fs.access(newPath);
+      console.log('Destination file already exists');
+      return;
+    } catch (err) {
+      // Destination doesn't exist, safe to proceed
+    }
 
-    console.log('Directory emptied successfully');
+    // Perform the rename
+    await fs.rename(oldPath, newPath);
+    console.log('File renamed successfully');
   } catch (err) {
-    console.error('Error emptying directory:', err);
+    if (err.code === 'ENOENT') {
+      console.log('Source file does not exist');
+    } else {
+      console.error('Error renaming file:', err);
+    }
   }
 }
 
 // Usage
-emptyDirectory('directory-to-empty');
+renameFile();

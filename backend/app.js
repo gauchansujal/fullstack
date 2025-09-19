@@ -1,36 +1,34 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-async function moveFile(){
-  const sourceFile = 'myy.text';
-  const targetDir = "C:\Users\Sujal\Downloads";
-  const targetFile = path.join( targetDir, 'myy.text');
-  try{
-    await fs.access(sourceFile);
-    await fs.mkdir(targetDir, {recursive: true});
+async function batchRename() {
+  const directory = '.'; // current folder
+  const pattern = /^image(\d*)\.png$/i; // matches image.png, image1.png, image23.png, etc.
 
-    await fs.rename(sourceFile, targetFile);
+  try {
+    const files = await fs.readdir(directory);
 
-    console.log('File moved sucesfully');
-  }catch (err) {
-    if (err.code === 'ENOENT'){
-      console.log('source file does not exist');
+    for (const file of files) {
+      const match = file.match(pattern);
+      if (match) {
+        const [_, number] = match;
+        const numberStr = number ? number : '0'; // use 0 if no number
+        const newName = `photo-${numberStr.padStart(3, '0')}.png`;
 
-    }else if (err.code === 'EXDEV'){
-      console.log('cross device move detected, using copy+delete fallback');
-      await moveAcrossDevices(sourceFile, targetFile);
-    }else {
-      console.log('error moving file :', err);
+        const oldPath = path.join(directory, file);
+        const newPath = path.join(directory, newName);
+
+        if (oldPath !== newPath) {
+          await fs.rename(oldPath, newPath);
+          console.log(`Renamed: ${file} -> ${newName}`);
+        }
+      }
     }
+
+    console.log('Batch rename completed');
+  } catch (err) {
+    console.error('Error during batch rename:', err);
   }
 }
-async function moveAcrossDevices(source, target){
-  try{
-    await fs.copyFile(source, target);
-    await fs.unlink(source);
-    console.log('file moved across devices sucessfully');
-  }catch (err){
-    try{await fs.unlink(target);} catch (e) {}
-    throw err;
-  }
-}moveFile();
+
+batchRename();

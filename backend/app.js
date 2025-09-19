@@ -1,34 +1,35 @@
 const fs = require('fs').promises;
 const path = require('path');
+const os = require('os');
 
-async function batchRename() {
-  const directory = '.'; // current folder
-  const pattern = /^image(\d*)\.png$/i; // matches image.png, image1.png, image23.png, etc.
+async function updateFileAtomic(filePath, newContent) {
+  const tempPath = path.join(
+    os.tmpdir(),
+    `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  );
 
   try {
-    const files = await fs.readdir(directory);
+    // 1. Write to temp file
+    await fs.writeFile(tempPath, newContent, 'utf8');
 
-    for (const file of files) {
-      const match = file.match(pattern);
-      if (match) {
-        const [_, number] = match;
-        const numberStr = number ? number : '0'; // use 0 if no number
-        const newName = `photo-${numberStr.padStart(3, '0')}.png`;
-
-        const oldPath = path.join(directory, file);
-        const newPath = path.join(directory, newName);
-
-        if (oldPath !== newPath) {
-          await fs.rename(oldPath, newPath);
-          console.log(`Renamed: ${file} -> ${newName}`);
-        }
-      }
+    // 2. Verify the temp file was written correctly
+    const stats = await fs.stat(tempPath);
+    if (stats.size === 0) {
+      throw new Error('Temporary file is empty');
     }
 
-    console.log('Batch rename completed');
+    // 3. Rename (atomic on most systems)
+    await fs.rename(tempPath, filePath);
+
+    console.log('File updated atomically');
   } catch (err) {
-    console.error('Error during batch rename:', err);
+    // Clean up temp file if it exists
+    try { await fs.unlink(tempPath); } catch (e) {}
+
+    console.error('Atomic update failed:', err);
+    throw err;
   }
 }
 
-batchRename();
+// Usage
+updateFileAtomic('important-config.json', JSON.stringify({ key: 'value' }, null, 2));

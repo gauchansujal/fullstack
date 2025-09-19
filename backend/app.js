@@ -1,33 +1,36 @@
 const fs = require('fs').promises;
+const path = require('path');
 
-async function renameFile() {
-  const oldPath = 'my.text';
-  const newPath = 'myy.text';
+async function moveFile(){
+  const sourceFile = 'myy.text';
+  const targetDir = "C:\Users\Sujal\Downloads";
+  const targetFile = path.join( targetDir, 'myy.text');
+  try{
+    await fs.access(sourceFile);
+    await fs.mkdir(targetDir, {recursive: true});
 
-  try {
-    // Check if source file exists
-    await fs.access(oldPath);
+    await fs.rename(sourceFile, targetFile);
 
-    // Check if destination file already exists
-    try {
-      await fs.access(newPath);
-      console.log('Destination file already exists');
-      return;
-    } catch (err) {
-      // Destination doesn't exist, safe to proceed
-    }
+    console.log('File moved sucesfully');
+  }catch (err) {
+    if (err.code === 'ENOENT'){
+      console.log('source file does not exist');
 
-    // Perform the rename
-    await fs.rename(oldPath, newPath);
-    console.log('File renamed successfully');
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.log('Source file does not exist');
-    } else {
-      console.error('Error renaming file:', err);
+    }else if (err.code === 'EXDEV'){
+      console.log('cross device move detected, using copy+delete fallback');
+      await moveAcrossDevices(sourceFile, targetFile);
+    }else {
+      console.log('error moving file :', err);
     }
   }
 }
-
-// Usage
-renameFile();
+async function moveAcrossDevices(source, target){
+  try{
+    await fs.copyFile(source, target);
+    await fs.unlink(source);
+    console.log('file moved across devices sucessfully');
+  }catch (err){
+    try{await fs.unlink(target);} catch (e) {}
+    throw err;
+  }
+}moveFile();

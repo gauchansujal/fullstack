@@ -1,13 +1,7 @@
-const fs = require('fs').promises;
+const path = require('path');
 
-async function removeFile() {
-  try {
-    await fs.unlink('C:/Users/Sujal/OneDrive/Desktop/fullstack/backend/important-config.json');
-    console.log('File deleted successfully');
-  } catch (err) {
-    console.error('Error deleting file:', err);
-  }
-}
+const filename = path.basename('/user/docs/app.log');
+console.log(filename);
 
-// Usage
-removeFile();
+const filenameWithoutExt = path.basename('/users/docs/app.log', '.log');
+console.log(filenameWithoutExt);

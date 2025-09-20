@@ -1,7 +1,9 @@
 const path = require('path');
 
-const filename = path.basename('/user/docs/app.log');
-console.log(filename);
+console.log('directory name:', __dirname);
+console.log('file name:',__filename);
 
-const filenameWithoutExt = path.basename('/users/docs/app.log', '.log');
-console.log(filenameWithoutExt);
+const configPath = path.join(__dirname, 'config', 'app-config.json');
+console.log('config file path:', configPath);
+
+console.log('directory using path.dirname():', path.dirname(__filename));

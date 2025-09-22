@@ -1,11 +1,8 @@
-const path = require('path');
+const fs = require('path');
+const pathInfo = path.parse('/users/docs/file.txt');
+console.log(pathInfo);
 
-// Join path segments
-const fullPath = path.join('/users', 'docs', 'file.txt');
-console.log(fullPath); // Output depends on OS
-
-// Handle relative paths and navigation
-console.log(path.join('/users', '../system', './logs', 'file.txt'));
-
-// Handle multiple slashes
-console.log(path.join('users', '//docs', 'file.txt')); // Normalizes slashes
+console.log('directory : ', pathInfo.dir);
+console.log('filename:', pathInfo.base);
+console.log('Name only:',pathInfo.name);
+console.log('Extension:', pathInfo.ext);

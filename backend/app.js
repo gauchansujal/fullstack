@@ -1,21 +1,11 @@
-const path = requyire('path');
-const pathString1 = path.format({
-    dir: '/users/docs',
-    base: 'file.txt'
-});
+const path = require('path');
 
-console.log(pathString1);
+console.log(path.normalize('/users/./docs/../data/file.txt'));
 
-const pathString2 = path.format({
-    root : '/',
-    dir : '/users/docs',
-    name : 'file',
-    ext : '.txt'
-});
+console.log(path.normalize('/users//docs////file.txt'));
 
-console.log(pathString2);
+console.log(path.normalize('c:\\users\\docs\\..\\file.txt'));
 
-const parsePath = path.parse('/users/docs/old-file.txt');
-parsedPath.base = 'new-file.md';
-const newPath = path.format(parsePath);
-console.log(newPath);
+console.log(path.normalize('.'));
+console.log(path.normalize('..'));
+console.log(path.normalize('/..'));

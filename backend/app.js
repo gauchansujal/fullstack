@@ -1,12 +1,20 @@
 const path = require('path');
-console.log(path.relative('/users/docs/file.txt','/users/images/photo.jpg'));
 
-console.log(path.relative('/users/docs/file.txt', '/users/docs/file2.txt'));
+// Get the platform-specific separator
+console.log(`Path separator: ${JSON.stringify(path.sep)}`); // '\\' on Windows, '/' on POSIX
 
-console.log(path.relative('/users/doc/file.txt', 'c:\\user\\impl\\bbb'));
+// Building paths safely across platforms
+const parts = ['users', 'docs', 'file.txt'];
+const filePath = parts.join(path.sep);
+console.log('Built path:', filePath);
 
-const absolutePath = '/var/www/static/images/logo.png';
-const webRoot = '/var/www';
-const webPath = path.relative(webRoot, absolutePath).replace(/\\/g, '/');
+// Splitting paths correctly
+const pathToSplit = process.platform === 'win32'
+  ? 'C:\\Users\\docs\\file.txt'
+  : '/users/docs/file.txt';
+const pathParts = pathToSplit.split(path.sep);
+console.log('Split path:', pathParts);
 
-console.log(webPath);
+// Normalizing paths with the correct separator
+const normalized = path.normalize(`users${path.sep}docs${path.sep}..${path.sep}file.txt`);
+console.log('Normalized path:', normalized); 

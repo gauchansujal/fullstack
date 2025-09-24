@@ -1,17 +1,16 @@
 const path = require('path');
 
-// Always use Windows-style path handling
-const winPath = 'C:\\Users\\user\\Documents\\file.txt';
-console.log('Windows basename:', path.win32.basename(winPath));
-console.log('Windows dirname:', path.win32.dirname(winPath));
+// Always use POSIX-style path handling
+const posixPath = '/home/user/documents/file.txt';
+console.log('POSIX basename:', path.posix.basename(posixPath));
+console.log('POSIX dirname:', path.posix.dirname(posixPath));
 
-// Normalize Windows paths
-console.log('Normalized path:', path.win32.normalize('C:\\\\temp\\\\foo\\..\\bar\\file.txt'));
+// Normalize POSIX paths
+console.log('Normalized path:', path.posix.normalize('/usr/local//bin/../lib/file.txt'));
 
-// Convert between forward and backward slashes
-const mixedPath = 'C:/Users/User/Documents//file.txt';
-console.log('Normalized mixed slashes:', path.win32.normalize(mixedPath));
+// Working with relative paths
+console.log('Relative path:', path.posix.relative('/data/test/aaa', '/data/impl/bbb'));
 
-// Working with UNC paths
-const uncPath = '\\\\server\\share\\folder\\file.txt';
-console.log('UNC path components:', path.win32.parse(uncPath));
+// Joining paths with POSIX separators
+const urlPath = ['static', 'images', 'logo.png'].join(path.posix.sep);
+console.log('URL path:', urlPath); // 'static/images/logo.png'

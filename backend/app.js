@@ -1,20 +1,17 @@
 const path = require('path');
 
-// Get the platform-specific separator
-console.log(`Path separator: ${JSON.stringify(path.sep)}`); // '\\' on Windows, '/' on POSIX
+// Always use Windows-style path handling
+const winPath = 'C:\\Users\\user\\Documents\\file.txt';
+console.log('Windows basename:', path.win32.basename(winPath));
+console.log('Windows dirname:', path.win32.dirname(winPath));
 
-// Building paths safely across platforms
-const parts = ['users', 'docs', 'file.txt'];
-const filePath = parts.join(path.sep);
-console.log('Built path:', filePath);
+// Normalize Windows paths
+console.log('Normalized path:', path.win32.normalize('C:\\\\temp\\\\foo\\..\\bar\\file.txt'));
 
-// Splitting paths correctly
-const pathToSplit = process.platform === 'win32'
-  ? 'C:\\Users\\docs\\file.txt'
-  : '/users/docs/file.txt';
-const pathParts = pathToSplit.split(path.sep);
-console.log('Split path:', pathParts);
+// Convert between forward and backward slashes
+const mixedPath = 'C:/Users/User/Documents//file.txt';
+console.log('Normalized mixed slashes:', path.win32.normalize(mixedPath));
 
-// Normalizing paths with the correct separator
-const normalized = path.normalize(`users${path.sep}docs${path.sep}..${path.sep}file.txt`);
-console.log('Normalized path:', normalized);
+// Working with UNC paths
+const uncPath = '\\\\server\\share\\folder\\file.txt';
+console.log('UNC path components:', path.win32.parse(uncPath));

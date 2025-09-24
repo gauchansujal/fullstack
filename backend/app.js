@@ -17,4 +17,4 @@ console.log('Split path:', pathParts);
 
 // Normalizing paths with the correct separator
 const normalized = path.normalize(`users${path.sep}docs${path.sep}..${path.sep}file.txt`);
-console.log('Normalized path:', normalized); 
+console.log('Normalized path:', normalized);

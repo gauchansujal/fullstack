@@ -1,3 +1,2 @@
-const os  = require('os');
-const platform = os.platform();
-console.log(`platform: ${platform}`);
+const os = require('os');
+console.log(`os type:${os.type}`);

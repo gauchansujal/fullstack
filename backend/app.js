@@ -1,2 +1,2 @@
 const os = require('os');
-console.log(`os release: ${os.release()}`);
+console.log(`kernal version: ${os.version()}`);

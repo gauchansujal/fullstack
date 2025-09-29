@@ -1,22 +1,34 @@
 const os = require('os');
 
-// Get load averages
-const loadAverages = os.loadavg();
-console.log('System Load Averages (1, 5, 15 min):', loadAverages);
+// Get network interfaces information
+const networkInterfaces = os.networkInterfaces();
 
-// On Linux/Unix, load average represents the average system load over the last 1, 5, and 15 minutes
-// The values represent the number of processes in the system run queue
-const [oneMin, fiveMin, fifteenMin] = loadAverages;
-const cpuCount = os.cpus().length;
+console.log('Network Interfaces:');
 
-console.log(`1-minute load average: ${oneMin.toFixed(2)} (${(oneMin / cpuCount * 100).toFixed(1)}% of ${cpuCount} cores)`);
-console.log(`5-minute load average: ${fiveMin.toFixed(2)}`);
-console.log(`15-minute load average: ${fifteenMin.toFixed(2)}`);
+// Iterate over each network interface
+Object.entries(networkInterfaces).forEach(([name, addresses]) => {
+  console.log(`\nInterface: ${name}`);
+  addresses.forEach((address) => {
+    console.log(`- Family: ${address.family}`);
+    console.log(` Address: ${address.address}`);
+    console.log(` Netmask: ${address.netmask}`);
+    console.log(` MAC: ${address.mac || 'N/A'}`);
+    console.log(` Internal: ${address.internal}`);
+  });
+});
 
-// Example: Check if system is under heavy load
-const isSystemOverloaded = oneMin > cpuCount * 1.5;
-if (isSystemOverloaded) {
-  console.warn('Warning: System is under heavy load!');
-} else {
-  console.log('System load is normal');
+// Example: Find the first non-internal IPv4 address
+function getLocalIpAddress() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1'; // Fallback to localhost
 }
+
+const localIp = getLocalIpAddress();
+console.log(`\nLocal IP Address: ${localIp}`);

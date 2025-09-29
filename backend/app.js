@@ -1,34 +1,13 @@
 const os = require('os');
 
-// Get network interfaces information
-const networkInterfaces = os.networkInterfaces();
+// Get system uptime in seconds
+const uptime = os.uptime();
+console.log(`System Uptime: ${uptime} seconds`);
 
-console.log('Network Interfaces:');
+// Format uptime in a more readable way
+const uptimeDays = Math.floor(uptime / (60 * 60 * 24));
+const uptimeHours = Math.floor((uptime % (60 * 60 * 24)) / (60 * 60));
+const uptimeMinutes = Math.floor((uptime % (60 * 60)) / 60);
+const uptimeSeconds = Math.floor(uptime % 60);
 
-// Iterate over each network interface
-Object.entries(networkInterfaces).forEach(([name, addresses]) => {
-  console.log(`\nInterface: ${name}`);
-  addresses.forEach((address) => {
-    console.log(`- Family: ${address.family}`);
-    console.log(` Address: ${address.address}`);
-    console.log(` Netmask: ${address.netmask}`);
-    console.log(` MAC: ${address.mac || 'N/A'}`);
-    console.log(` Internal: ${address.internal}`);
-  });
-});
-
-// Example: Find the first non-internal IPv4 address
-function getLocalIpAddress() {
-  const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
-      }
-    }
-  }
-  return '127.0.0.1'; // Fallback to localhost
-}
-
-const localIp = getLocalIpAddress();
-console.log(`\nLocal IP Address: ${localIp}`);
+console.log(`System has been running for: ${uptimeDays} days, ${uptimeHours} hours, ${uptimeMinutes} minutes, ${uptimeSeconds} seconds`);

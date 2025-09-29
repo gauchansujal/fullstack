@@ -1,27 +1,22 @@
 const os = require('os');
-function formatBytes(bytes, decimals = 2){
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals ;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes)/Math.log(k));
-    return parseFloat((bytes / Math.pow(k,i)).toFixed(dm)) + '' + sizes[i];
-}
 
-const totalMem = os.totalmem();
-const freeMem = os.freemem();
-const useMem = totalMem - freeMem;
-const usagePercent = ((useMem / totalMem)* 100).toFixed(2);
+// Get load averages
+const loadAverages = os.loadavg();
+console.log('System Load Averages (1, 5, 15 min):', loadAverages);
 
-console.log('memory Information:');
-console.log(`- Total memory : ${formatBytes(totalMem)}`);
-console.log(`- Free memory : ${formatBytes(freeMem)} (${((freeMem / totalMem)*100).toFixed(2)}%)`);
-console.log(`- Used Memory : ${formatBytes(useMem)}(${usagePercent}%)`);
+// On Linux/Unix, load average represents the average system load over the last 1, 5, and 15 minutes
+// The values represent the number of processes in the system run queue
+const [oneMin, fiveMin, fifteenMin] = loadAverages;
+const cpuCount = os.cpus().length;
 
-const MIN_FREE_MEMORY = 200 * 1024 * 1024;
-if (freeMem < MIN_FREE_MEMORY){
-    console.warn('warning: low on memory!');
+console.log(`1-minute load average: ${oneMin.toFixed(2)} (${(oneMin / cpuCount * 100).toFixed(1)}% of ${cpuCount} cores)`);
+console.log(`5-minute load average: ${fiveMin.toFixed(2)}`);
+console.log(`15-minute load average: ${fifteenMin.toFixed(2)}`);
 
-}else{
-    console.log('system has sufficient memory available');
+// Example: Check if system is under heavy load
+const isSystemOverloaded = oneMin > cpuCount * 1.5;
+if (isSystemOverloaded) {
+  console.warn('Warning: System is under heavy load!');
+} else {
+  console.log('System load is normal');
 }

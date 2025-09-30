@@ -1,16 +1,14 @@
 const os = require('os');
+const fs = require('fs');
 
-console.log('Signal Constants :', os.constants.signals);
+console.log('End of liner character:', JSON.stringify(os.EOL));
+const lines = [
+    'first line',
+    'Second line',
+    'Third line',
 
-process.on('SIGINT', ()=>{
-    console.log('Recevied SIGINT.Performing cleanup...');
-    process.exit(0);
-});
+];
 
-process.on('SIGTERM',()=>{
-    console.log('Reced SIGTERM. Shutting down gracefully...');
-    process.exit(0);
-
-});
-console.log('process is running. Press Ctrl+C to exit.');
-
+const content = lines.join(os.EOL);
+fs.writeFileSync('output.txt', content);
+console.log('file written with platform0appropriate line ending');

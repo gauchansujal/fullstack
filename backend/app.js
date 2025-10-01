@@ -1,33 +1,50 @@
 const os = require('os');
 
-function getSystemInfo() {
-  const info = {
-    os: {
-      type: os.type(),
-      platform: os.platform(),
-      architecture: os.arch(),
-      release: os.release(),
-      hostname: os.hostname(),
-      uptime: formatUptime(os.uptime())
-    },
-    user: {
-      username: os.userInfo().username,
-      homedir: os.homedir(),
-      tempdir: os.tmpdir()
-    },
-    memory: {
-      total: formatBytes(os.totalmem()),
-      free: formatBytes(os.freemem()),
-      usage: `${((1 - os.freemem() / os.totalmem()) * 100).toFixed(2)}%`
-    },
-    cpu: {
-      model: os.cpus()[0].model,
-      cores: os.cpus().length,
-      speed: `${os.cpus()[0].speed} MHz`
-    }
-  };
+function monitorResources() {
+  console.clear(); // Clear console for a cleaner display
 
-  return info;
+  const now = new Date().toLocaleTimeString();
+  console.log(`======= RESOURCE MONITOR (${now}) =======`);
+
+  // CPU Usage
+  const cpus = os.cpus();
+  console.log(`\nCPU Cores: ${cpus.length}`);
+
+  // Calculate CPU usage (this is approximate since we need two measurements)
+  const cpuUsage = cpus.map((cpu, index) => {
+    const total = Object.values(cpu.times).reduce((acc, tv) => acc + tv, 0);
+    const idle = cpu.times.idle;
+    const usage = ((total - idle) / total * 100).toFixed(1);
+    return `Core ${index}: ${usage}% used`;
+  });
+
+  console.log(cpuUsage.join('\n'));
+
+  // Memory Usage
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
+  const usedMem = totalMem - freeMem;
+
+  console.log('\nMemory Usage:');
+  console.log(`Total: ${formatBytes(totalMem)}`);
+  console.log(`Used: ${formatBytes(usedMem)} (${(usedMem / totalMem * 100).toFixed(1)}%)`);
+  console.log(`Free: ${formatBytes(freeMem)} (${(freeMem / totalMem * 100).toFixed(1)}%)`);
+
+  // System Uptime
+  console.log(`\nSystem Uptime: ${formatUptime(os.uptime())}`);
+
+  // Process Info
+  console.log('\nProcess Information:');
+  console.log(`PID: ${process.pid}`);
+  console.log(`Memory Usage: ${formatBytes(process.memoryUsage().rss)}`);
+  console.log(`User: ${os.userInfo().username}`);
+}
+
+function formatBytes(bytes) {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Bytes';
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }
 
 function formatUptime(seconds) {
@@ -39,29 +56,19 @@ function formatUptime(seconds) {
   return `${days}d ${hours}h ${minutes}m ${secs}s`;
 }
 
-function formatBytes(bytes) {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 Bytes';
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
-}
+// Initial display
+monitorResources();
 
-// Display the system information dashboard
-const systemInfo = getSystemInfo();
-console.log('======= SYSTEM INFORMATION DASHBOARD =======');
-console.log(JSON.stringify(systemInfo, null, 2));
+// Update every second (note: in a real application, you might not want
+// to update this frequently as it uses CPU resources)
+const intervalId = setInterval(monitorResources, 1000);
 
-// Display in a more formatted way
-console.log('\n======= FORMATTED SYSTEM INFORMATION =======');
-console.log(`OS: ${systemInfo.os.type} (${systemInfo.os.platform} ${systemInfo.os.architecture})`);
-console.log(`Version: ${systemInfo.os.release}`);
-console.log(`Hostname: ${systemInfo.os.hostname}`);
-console.log(`Uptime: ${systemInfo.os.uptime}`);
-console.log(`User: ${systemInfo.user.username}`);
-console.log(`Home Directory: ${systemInfo.user.homedir}`);
-console.log(`CPU: ${systemInfo.cpu.model}`);
-console.log(`Cores: ${systemInfo.cpu.cores}`);
-console.log(`Speed: ${systemInfo.cpu.speed}`);
-console.log(`Memory Total: ${systemInfo.memory.total}`);
-console.log(`Memory Free: ${systemInfo.memory.free}`);
-console.log(`Memory Usage: ${systemInfo.memory.usage}`);
+// In a real application, you would need to handle cleanup:
+// clearInterval(intervalId);
+
+// For this example, we'll run for 10 seconds then stop
+console.log('Monitor will run for 10 seconds...');
+setTimeout(() => {
+  clearInterval(intervalId);
+  console.log('\nResource monitoring stopped.');
+}, 10000);

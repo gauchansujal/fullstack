@@ -1,74 +1,83 @@
 const os = require('os');
+const fs = require('fs');
+const path = require('path');
 
-function monitorResources() {
-  console.clear(); // Clear console for a cleaner display
+// Function to determine a good location for app data based on the OS
+function getAppDataPath(appName) {
+  const platform = os.platform();
 
-  const now = new Date().toLocaleTimeString();
-  console.log(`======= RESOURCE MONITOR (${now}) =======`);
+  let appDataPath;
 
-  // CPU Usage
-  const cpus = os.cpus();
-  console.log(`\nCPU Cores: ${cpus.length}`);
+  switch (platform) {
+    case 'win32': // Windows
+      appDataPath = path.join(process.env.APPDATA || '', appName);
+      break;
+    case 'darwin': // macOS
+      appDataPath = path.join(os.homedir(), 'Library', 'Application Support', appName);
+      break;
+    case 'linux': // Linux
+      appDataPath = path.join(os.homedir(), '.config', appName);
+      break;
+    default: // Fallback for other platforms
+      appDataPath = path.join(os.homedir(), `.${appName}`);
+  }
 
-  // Calculate CPU usage (this is approximate since we need two measurements)
-  const cpuUsage = cpus.map((cpu, index) => {
-    const total = Object.values(cpu.times).reduce((acc, tv) => acc + tv, 0);
-    const idle = cpu.times.idle;
-    const usage = ((total - idle) / total * 100).toFixed(1);
-    return `Core ${index}: ${usage}% used`;
-  });
-
-  console.log(cpuUsage.join('\n'));
-
-  // Memory Usage
-  const totalMem = os.totalmem();
-  const freeMem = os.freemem();
-  const usedMem = totalMem - freeMem;
-
-  console.log('\nMemory Usage:');
-  console.log(`Total: ${formatBytes(totalMem)}`);
-  console.log(`Used: ${formatBytes(usedMem)} (${(usedMem / totalMem * 100).toFixed(1)}%)`);
-  console.log(`Free: ${formatBytes(freeMem)} (${(freeMem / totalMem * 100).toFixed(1)}%)`);
-
-  // System Uptime
-  console.log(`\nSystem Uptime: ${formatUptime(os.uptime())}`);
-
-  // Process Info
-  console.log('\nProcess Information:');
-  console.log(`PID: ${process.pid}`);
-  console.log(`Memory Usage: ${formatBytes(process.memoryUsage().rss)}`);
-  console.log(`User: ${os.userInfo().username}`);
+  return appDataPath;
 }
 
-function formatBytes(bytes) {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 Bytes';
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+// Function to get appropriate command based on OS
+function getOpenCommand() {
+  const platform = os.platform();
+
+  switch (platform) {
+    case 'win32': // Windows
+      return 'start';
+    case 'darwin': // macOS
+      return 'open';
+    default: // Linux and others
+      return 'xdg-open';
+  }
 }
 
-function formatUptime(seconds) {
-  const days = Math.floor(seconds / (60 * 60 * 24));
-  const hours = Math.floor((seconds % (60 * 60 * 24)) / (60 * 60));
-  const minutes = Math.floor((seconds % (60 * 60)) / 60);
-  const secs = Math.floor(seconds % 60);
+// Example usage
+const appName = 'myapp';
+const appDataPath = getAppDataPath(appName);
+const openCommand = getOpenCommand();
 
-  return `${days}d ${hours}h ${minutes}m ${secs}s`;
+console.log(`OS Platform: ${os.platform()}`);
+console.log(`OS Type: ${os.type()}`);
+console.log(`Recommended App Data Path: ${appDataPath}`);
+console.log(`Open Command: ${openCommand}`);
+
+// Example of platform-specific behavior
+console.log('\nPlatform-Specific Actions:');
+
+if (os.platform() === 'win32') {
+  console.log('- Using Windows-specific registry functions');
+  console.log('- Setting up Windows service');
+} else if (os.platform() === 'darwin') {
+  console.log('- Using macOS keychain for secure storage');
+  console.log('- Setting up launchd agent');
+} else if (os.platform() === 'linux') {
+  console.log('- Using Linux systemd for service management');
+  console.log('- Setting up dbus integration');
 }
 
-// Initial display
-monitorResources();
+// Example of checking for available memory and adjusting behavior
+const availableMemGB = os.freemem() / (1024 * 1024 * 1024);
+console.log(`\nAvailable Memory: ${availableMemGB.toFixed(2)} GB`);
 
-// Update every second (note: in a real application, you might not want
-// to update this frequently as it uses CPU resources)
-const intervalId = setInterval(monitorResources, 1000);
+if (availableMemGB < 0.5) {
+  console.log('Low memory mode activated: reducing cache size and disabling features');
+} else if (availableMemGB > 4) {
+  console.log('High memory mode activated: increasing cache size and enabling all features');
+} else {
+  console.log('Standard memory mode activated: using default settings');
+}
 
-// In a real application, you would need to handle cleanup:
-// clearInterval(intervalId);
+// Example of CPU core detection for parallel processing
+const cpuCount = os.cpus().length;
+console.log(`\nCPU Cores: ${cpuCount}`);
 
-// For this example, we'll run for 10 seconds then stop
-console.log('Monitor will run for 10 seconds...');
-setTimeout(() => {
-  clearInterval(intervalId);
-  console.log('\nResource monitoring stopped.');
-}, 10000);
+const recommendedWorkers = Math.max(1, cpuCount - 1); // Leave one core for the system
+console.log(`Recommended worker processes: ${recommendedWorkers}`);

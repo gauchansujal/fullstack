@@ -1,10 +1,14 @@
-let url = require('url');
-let adr = 'http://localhost:8080/defult.html?year=2017&month=february';
-let q = url.parse(adr, true);
+const { URL, URLSearchParams } = require('url');
 
-console.log(q.host);
-console.log(q.pathname);
-console.log(q.search);
+const myURL = new URL('https://example.com/?name=Kai&age=30');
+const params = new URLSearchParams(myURL.search);
 
-let qdata = q.query;
-console.log(qdata.month);
+// Get a parameter
+console.log(params.get('name'));
+
+// Add a parameter
+params.append('city', 'Stavanger');
+// Delete a parameter
+params.delete('age');
+// Convert to string
+console.log(params.toString());

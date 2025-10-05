@@ -1,18 +1,18 @@
-let http = require('http');
-let url = require('url');
-let fs = require('fs');
+const { URL } = require('url');
 
-http.createServer(function (req, res) {
-  let q = url.parse(req.url, true);
-  let filename = "." + q.pathname;
-  fs.readFile(filename, function(err, data) {
-    if (err) {
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      return res.end("404 Not Found");
-    }
- 
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(data);
-    return res.end();
-  });
-}).listen(8080);
+// Parse URL with query parameters
+const url = new URL('https://example.com/search?q=node.js&lang=en');
+
+// Get all parameters
+console.log(url.searchParams.toString()); // 'q=node.js&lang=en'
+
+// Get specific parameter
+console.log(url.searchParams.get('q')); // 'node.js'
+
+// Check if parameter exists
+console.log(url.searchParams.has('lang')); // true
+
+// Add new parameter
+url.searchParams.append('page', '2');
+console.log(url.href);
+// 'https://example.com/search?q=node.js&lang=en&page=2'

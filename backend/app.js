@@ -1,9 +1,8 @@
-let events = require('events');
-let eventEmitter = new events.EventEmitter();
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
 
-let myEventHandler = function () {
-  console.log("i hear a scream!");
-}
+emitter.on('userJoined', (username, userId)=>{
+  console.log(`${username}(${userId}) has joined the chat`);
+});
 
-eventEmitter.on('scream', myEventHandler);
-eventEmitter.emit('scream');
+emitter.emit('userJoined', 'johnDoe', 42);

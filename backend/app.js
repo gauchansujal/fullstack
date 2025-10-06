@@ -1,8 +1,10 @@
 const EventEmitter = require('events');
-const emitter = new EventEmitter();
+const emitter =  new EventEmitter();
 
-emitter.on('userJoined', (username, userId)=>{
-  console.log(`${username}(${userId}) has joined the chat`);
+emitter.once('connection', ()=>{
+  console.log('first connection established');
+
 });
 
-emitter.emit('userJoined', 'johnDoe', 42);
+emitter.emit('connetion');
+emitter.emit('connection');

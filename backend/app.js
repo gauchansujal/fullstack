@@ -1,10 +1,8 @@
 const EventEmitter = require('events');
-const emitter =  new EventEmitter();
+const emitter = new EventEmitter();
 
-emitter.once('connection', ()=>{
-  console.log('first connection established');
-
+emitter.on('error', (err)=>{
+  console.error('an error occured:', err.message);
 });
 
-emitter.emit('connetion');
-emitter.emit('connection');
+emitter.emit('error', new Error('something went wrong'));

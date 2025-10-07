@@ -1,8 +1,22 @@
-const EventEmitter = require('events');
-const emitter = new EventEmitter();
+const fs = require('fs');
 
-emitter.on('error', (err)=>{
-  console.error('an error occured:', err.message);
+// Create a readable stream from a file
+const readableStream = fs.createReadStream('input.txt', 'utf8');
+// Create a writable stream to a file
+const writableStream = fs.createWriteStream('output.txt');
+
+// Pipe the data from readable to writable stream
+readableStream.pipe(writableStream);
+
+// Handle completion and errors
+writableStream.on('finish', () => {
+  console.log('File copy completed!');
 });
 
-emitter.emit('error', new Error('something went wrong'));
+readableStream.on('error', (err) => {
+  console.error('Error reading file:', err);
+});
+
+writableStream.on('error', (err) => {
+  console.error('Error writing file:', err);
+});

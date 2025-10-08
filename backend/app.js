@@ -1,21 +1,35 @@
 const fs = require('fs');
 
-// Create a writable stream to a file
 const writableStream = fs.createWriteStream('output.txt');
 
-// Write data to the stream
-writableStream.write('Hello, ');
-writableStream.write('World!');
-writableStream.write('\nWriting to a stream is easy!');
+function writeData() {
+  let i = 100;
+  function write() {
+    let ok = true;
+    do {
+      i--;
+      if (i === 0) {
+        // Last time, close the stream
+        writableStream.write('Last chunk!\n');
+        writableStream.end();
+      } else {
+        // Continue writing data
+        const data = `Data chunk ${i}\n`;
+        // Write and check if we should continue
+        ok = writableStream.write(data);
+      }
+    }
+    while (i > 0 && ok);
 
-// End the stream
-writableStream.end();
+    if (i > 0) {
+      // We need to wait for the drain event before writing more
+      writableStream.once('drain', write);
+    }
+  }
+  write();
+}
 
-// Events for writable streams
+writeData();
 writableStream.on('finish', () => {
-  console.log('All data has been written to the file.');
-});
-
-writableStream.on('error', (err) => {
-  console.error('Error writing to stream:', err);
+  console.log('All data written successfully.');
 });

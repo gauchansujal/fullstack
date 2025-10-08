@@ -1,21 +1,21 @@
 const fs = require('fs');
 
-// Create a readable stream from a file
-const readableStream = fs.createReadStream('myfile.txt', {
-  encoding: 'utf8',
-  highWaterMark: 64 * 1024 // 64KB chunks
+// Create a writable stream to a file
+const writableStream = fs.createWriteStream('output.txt');
+
+// Write data to the stream
+writableStream.write('Hello, ');
+writableStream.write('World!');
+writableStream.write('\nWriting to a stream is easy!');
+
+// End the stream
+writableStream.end();
+
+// Events for writable streams
+writableStream.on('finish', () => {
+  console.log('All data has been written to the file.');
 });
 
-// Events for readable streams
-readableStream.on('data', (chunk) => {
-  console.log(`Received ${chunk.length} bytes of data.`);
-  console.log(chunk);
-});
-
-readableStream.on('end', () => {
-  console.log('No more data to read.');
-});
-
-readableStream.on('error', (err) => {
-  console.error('Error reading from stream:', err);
+writableStream.on('error', (err) => {
+  console.error('Error writing to stream:', err);
 });

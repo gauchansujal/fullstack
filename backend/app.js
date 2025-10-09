@@ -1,6 +1,2 @@
-const buf = Buffer.from('hello world');
-console.log(buf.toString());
-
-console.log(buf[0]);
-
-console.log(buf.length);
+const buffer1 = Buffer.alloc(10);
+console.log(buffer1);

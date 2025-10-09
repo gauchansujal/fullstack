@@ -1,2 +1,6 @@
-const buffer1 = Buffer.alloc(10);
-console.log(buffer1);
+const buffer2 = Buffer.allocUnsafe(10);
+
+console.log(buffer2);
+
+buffer2.fill(0);
+console.log(buffer2);

@@ -1,12 +1,11 @@
-const buffer3 = Buffer.from('hello world!');
-console.log(buffer3);
+const buffer = Buffer.from('Hello');
 
-console.log(buffer3.toString());
+// Iterate using for...of loop
+for (const byte of buffer) {
+console.log(byte);
+}
 
-const buffer4 = Buffer.from([65, 66, 67, 68, 69]);
-console.log(buffer4);
-
-console.log(buffer4.toString());
-
-const buffer5 = Buffer.from(buffer4);
-console.log(buffer5);
+// Iterate using forEach
+buffer.forEach((byte, index) => {
+  console.log(`Byte at position ${index}: ${byte}`);
+});

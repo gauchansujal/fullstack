@@ -1,14 +1,7 @@
-const buffer = Buffer.from('hello world!');
-console.log(buffer.toString());
+const buffer1 = Buffer.from('hello');
+const buffer2 = Buffer.from('hello');
+const buffer3 = Buffer.from('world');
 
-console.log(buffer.toString('utf8'));
-
-console.log(buffer.toString('utf8', 0,5));
-
-const hexBuffer = Buffer.from('48656c6c6f', 'hex');
-
-console.log(hexBuffer.toString());
-
-const base64Buffer = Buffer.from('SGVsbG8=', 'base64');
-
-console.log(base64Buffer.toString());
+console.log(buffer1.equals(buffer2));
+console.log(buffer1.equals(buffer3));
+console.log(buffer1 === buffer2);

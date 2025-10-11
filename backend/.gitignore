@@ -6,3 +6,7 @@ san.cnf
 node_modules
 package-lock.json
 package.json
+  ../logs/
+        ../node_modules/
+        ../package-lock.json
+        ../package.json

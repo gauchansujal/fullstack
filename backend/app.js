@@ -1,7 +1,11 @@
-const buffer1 = Buffer.from('ABC');
-const buffer2 = Buffer.from('BCD');
-const buffer3 = Buffer.from('ABC');
+const buffer = Buffer.from('hello, world!');
 
-console.log(Buffer.compare(buffer1, buffer2));
-console.log(Buffer.compare(buffer2, buffer1));
-console.log(Buffer.compare(buffer1, buffer3));
+const slice = buffer.slice(7);
+console.log(slice.toString());
+
+const slice2 = buffer.slice(0, 5);
+console.log(slice2.toString());
+
+slice[0] = 11;
+console.log(slice.toString());
+console.log(buffer.toString());

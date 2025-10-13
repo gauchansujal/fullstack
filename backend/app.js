@@ -1,18 +1,34 @@
 const crypto = require('crypto');
-const data = 'Hello, World!';
 
-// MD5 (not recommended for security-critical applications)
-const md5 = crypto.createHash('md5').update(data).digest('hex');
-console.log('MD5:', md5);
+// Function to hash a password
+function hashPassword(password) {
+  // Generate a random salt (16 bytes)
+  const salt = crypto.randomBytes(16).toString('hex');
 
-// SHA-1 (not recommended for security-critical applications)
-const sha1 = crypto.createHash('sha1').update(data).digest('hex');
-console.log('SHA-1:', sha1);
+  // Use scrypt for password hashing (recommended)
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
 
-// SHA-256
-const sha256 = crypto.createHash('sha256').update(data).digest('hex');
-console.log('SHA-256:', sha256);
+  // Return both salt and hash for storage
+  return { salt, hash };
+}
 
-// SHA-512
-const sha512 = crypto.createHash('sha512').update(data).digest('hex');
-console.log('SHA-512:', sha512);
+// Function to verify a password
+function verifyPassword(password, salt, hash) {
+  const hashedPassword = crypto.scryptSync(password, salt, 64).toString('hex');
+  return hashedPassword === hash;
+}
+
+// Example usage
+const password = 'mySecurePassword';
+
+// Hash the password for storage
+const { salt, hash } = hashPassword(password);
+console.log('Salt:', salt);
+console.log('Hash:', hash);
+
+// Verify a login attempt
+const isValid = verifyPassword(password, salt, hash);
+console.log('Password valid:', isValid); // true
+
+const isInvalid = verifyPassword('wrongPassword', salt, hash);
+console.log('Wrong password valid:', isInvalid); // false

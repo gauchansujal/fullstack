@@ -1,55 +1,42 @@
 const crypto = require('crypto');
 
 // Generate RSA key pair
-function generateKeyPair() {
-  return crypto.generateKeyPairSync('rsa', {
-    modulusLength: 2048, // Key size in bits
-    publicKeyEncoding: {
-      type: 'spki',
-      format: 'pem'
-    },
-    privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'pem'
-    }
-  });
+const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+  modulusLength: 2048,
+  publicKeyEncoding: {
+    type: 'spki',
+    format: 'pem'
+  },
+  privateKeyEncoding: {
+    type: 'pkcs8',
+    format: 'pem'
+  }
+});
+
+// Function to sign a message
+function signMessage(message, privateKey) {
+  const signer = crypto.createSign('sha256');
+  signer.update(message);
+  return signer.sign(privateKey, 'base64');
 }
 
-// Encrypt with public key
-function encryptWithPublicKey(text, publicKey) {
-  const buffer = Buffer.from(text, 'utf8');
-  const encrypted = crypto.publicEncrypt(
-    {
-      key: publicKey,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
-    },
-    buffer
-  );
-  return encrypted.toString('base64');
+// Function to verify a signature
+function verifySignature(message, signature, publicKey) {
+  const verifier = crypto.createVerify('sha256');
+  verifier.update(message);
+  return verifier.verify(publicKey, signature, 'base64');
 }
-
-// Decrypt with private key
-function decryptWithPrivateKey(encryptedText, privateKey) {
-  const buffer = Buffer.from(encryptedText, 'base64');
-  const decrypted = crypto.privateDecrypt(
-    {
-      key: privateKey,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
-    },
-    buffer
-  );
-  return decrypted.toString('utf8');
-}
-
-// Generate keys
-const { publicKey, privateKey } = generateKeyPair();
-console.log('Public Key:', publicKey.substring(0, 50) + '...');
-console.log('Private Key:', privateKey.substring(0, 50) + '...');
 
 // Example usage
-const message = 'This message is encrypted with RSA';
-const encrypted = encryptWithPublicKey(message, publicKey);
-console.log('Encrypted:', encrypted.substring(0, 50) + '...');
+const message = 'This message needs to be signed';
+const signature = signMessage(message, privateKey);
+console.log('Message:', message);
+console.log('Signature:', signature.substring(0, 50) + '...');
 
-const decrypted = decryptWithPrivateKey(encrypted, privateKey);
-console.log('Decrypted:', decrypted)
+// Verify the signature
+const isValid = verifySignature(message, signature, publicKey);
+console.log('Signature valid:', isValid); // true
+
+// Verify with a modified message
+const isInvalid = verifySignature('Modified message', signature, publicKey);
+console.log('Modified message valid:', isInvalid); // false

@@ -1,42 +1,31 @@
 const crypto = require('crypto');
 
-// Generate RSA key pair
-const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-  modulusLength: 2048,
-  publicKeyEncoding: {
-    type: 'spki',
-    format: 'pem'
-  },
-  privateKeyEncoding: {
-    type: 'pkcs8',
-    format: 'pem'
-  }
-});
+// Generate random bytes
+const randomBytes = crypto.randomBytes(16);
+console.log('Random bytes:', randomBytes.toString('hex'));
 
-// Function to sign a message
-function signMessage(message, privateKey) {
-  const signer = crypto.createSign('sha256');
-  signer.update(message);
-  return signer.sign(privateKey, 'base64');
+// Generate a random string (Base64)
+const randomString = crypto.randomBytes(32).toString('base64');
+console.log('Random string:', randomString);
+
+// Generate a random number between 1 and 100
+function secureRandomNumber(min, max) {
+  // Ensure we have enough randomness
+  const range = max - min + 1;
+  const bytesNeeded = Math.ceil(Math.log2(range) / 8);
+  const maxValue = 256 ** bytesNeeded;
+
+  // Generate random bytes and convert to a number
+  const randomBytes = crypto.randomBytes(bytesNeeded);
+  const randomValue = randomBytes.reduce((acc, byte, i) => {
+    return acc + byte * (256 ** i);
+  }, 0);
+
+  // Scale to our range and shift by min
+  return min + Math.floor((randomValue * range) / maxValue);
 }
 
-// Function to verify a signature
-function verifySignature(message, signature, publicKey) {
-  const verifier = crypto.createVerify('sha256');
-  verifier.update(message);
-  return verifier.verify(publicKey, signature, 'base64');
+// Example: Generate 5 random numbers
+for (let i = 0; i < 5; i++) {
+  console.log(`Random number ${i+1}:`, secureRandomNumber(1, 100));
 }
-
-// Example usage
-const message = 'This message needs to be signed';
-const signature = signMessage(message, privateKey);
-console.log('Message:', message);
-console.log('Signature:', signature.substring(0, 50) + '...');
-
-// Verify the signature
-const isValid = verifySignature(message, signature, publicKey);
-console.log('Signature valid:', isValid); // true
-
-// Verify with a modified message
-const isInvalid = verifySignature('Modified message', signature, publicKey);
-console.log('Modified message valid:', isInvalid); // false

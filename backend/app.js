@@ -1,16 +1,17 @@
-setTimeout(()=>{
-  console.log('this message is displayed after 2 seconds');
+const { setTimeout } = require('timers/promises');
 
-}, 2000);
+async function delayedGreeting() {
+  console.log('Starting...');
 
-setTimeout((name)=>{
-  console.log(`Hello, ${name}!`);
+  // Wait for 2 seconds
+  await setTimeout(2000);
 
-}, 1000, 'World');
+  console.log('After 2 seconds');
 
-const timeoutId = setTimeout(()=>{
-  console.log('this will never be displayed');
-},5000);
+  // Wait for 1 second with a value
+  const result = await setTimeout(1000, 'Hello, World!');
 
-clearTimeout(timeoutId);
-console.log('timeout has been cancelled');
+  console.log('After 1 more second:', result);
+}
+
+delayedGreeting().catch(console.error);

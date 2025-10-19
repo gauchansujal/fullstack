@@ -1,17 +1,23 @@
-const { setTimeout } = require('timers/promises');
+// Basic interval
+let counter = 0;
+const intervalId = setInterval(() => {
+  counter++;
+  console.log(`Interval executed ${counter} times`);
 
-async function delayedGreeting() {
-  console.log('Starting...');
+  // Stop after 5 executions
+  if (counter >= 5) {
+    clearInterval(intervalId);
+    console.log('Interval stopped');
+  }
+}, 1000);
 
-  // Wait for 2 seconds
-  await setTimeout(2000);
+// Interval with arguments
+const nameInterval = setInterval((name) => {
+  console.log(`Hello, ${name}!`);
+}, 2000, 'Node.js');
 
-  console.log('After 2 seconds');
-
-  // Wait for 1 second with a value
-  const result = await setTimeout(1000, 'Hello, World!');
-
-  console.log('After 1 more second:', result);
-}
-
-delayedGreeting().catch(console.error);
+// Stop the name interval after 6 seconds
+setTimeout(() => {
+  clearInterval(nameInterval);
+  console.log('Name interval stopped');
+}, 6000);

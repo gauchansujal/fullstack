@@ -1,23 +1,11 @@
-// Basic interval
-let counter = 0;
-const intervalId = setInterval(() => {
-  counter++;
-  console.log(`Interval executed ${counter} times`);
+const dns = require('dns');
 
-  // Stop after 5 executions
-  if (counter >= 5) {
-    clearInterval(intervalId);
-    console.log('Interval stopped');
+// Look up a domain name
+dns.lookup('example.com', (err, address, family) => {
+  if (err) {
+    console.error('Lookup error:', err);
+    return;
   }
-}, 1000);
-
-// Interval with arguments
-const nameInterval = setInterval((name) => {
-  console.log(`Hello, ${name}!`);
-}, 2000, 'Node.js');
-
-// Stop the name interval after 6 seconds
-setTimeout(() => {
-  clearInterval(nameInterval);
-  console.log('Name interval stopped');
-}, 6000);
+  console.log(`IP address: ${address}`);
+  console.log(`IP version: IPv${family}`);
+});

@@ -1,11 +1,24 @@
-// Basic require
 const assert = require('assert');
 
-// Using strict mode (recommended)
-const assert = require('assert').strict;
+assert(true);
+assert(1);
+assert('string');
+assert({});
 
-// Destructuring specific methods
-const { strictEqual, deepStrictEqual, throws } = require('assert');
+try{
+  assert(false, 'this value is not true');
 
-// For async/await tests
-const { rejects, doesNotReject } = require('assert').strict;
+}
+catch (err){
+  console.error(`Error: ${err.message}`);
+
+}
+try{
+  assert(0);
+  assert('');
+  assert(null);
+  assert(undefined);
+
+}catch(err){
+  console.error(`Error: ${err.message}`);
+}

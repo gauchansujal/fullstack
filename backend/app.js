@@ -1,12 +1,9 @@
 const assert = require('assert');
 
-assert.equal(1,1);
-assert.equal(1,1);
-assert.equal(true, 1);
-
+assert.strictEqual(1,1);
 try{
-  assert.equal(1,2,'1 is not equal to 2');
-
+  assert.strictEqual('1', 1, 'String "1" is not strictly equal to number 1');
+  assert.strictEqual(true, 1, 'true is not strictly equal to 1')
 }catch (err){
   console.error(`Error: ${err.message}`);
 }

@@ -1,24 +1,12 @@
 const assert = require('assert');
 
-assert(true);
-assert(1);
-assert('string');
-assert({});
+assert.equal(1,1);
+assert.equal(1,1);
+assert.equal(true, 1);
 
 try{
-  assert(false, 'this value is not true');
+  assert.equal(1,2,'1 is not equal to 2');
 
-}
-catch (err){
-  console.error(`Error: ${err.message}`);
-
-}
-try{
-  assert(0);
-  assert('');
-  assert(null);
-  assert(undefined);
-
-}catch(err){
+}catch (err){
   console.error(`Error: ${err.message}`);
 }

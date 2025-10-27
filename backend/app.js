@@ -2,9 +2,23 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.get('/', (req,res)=>{
-  res.send('hello world form express.js');
+// Respond to GET request on the root route
+app.get('/', (req, res) => {
+  res.send('GET request to the homepage');
 });
-app.listen(port, ()=>{
-  console.log(`exppress server running at http://localhost:${port}`);
+
+// Respond to POST request on the root route
+app.post('/', (req, res) => {
+  res.send('POST request to the homepage');
+});
+
+
+
+app.use((req, res) => {
+  res.status(404).send('404 - Page not found');
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
 });

@@ -1,14 +1,10 @@
-const assert = require('assert');
-assert.notEqual(1,2);
-assert.notDeepStrictEqual('1',1);
+const express = require('express');
+const app = express();
+const port = 8080;
 
-try{
-  assert.notEqual(1, '1', '1 is coercively  equal to "1');
-} catch (err) {
-  console.error(`Error: ${err.message}`);
-}
-try {
-  assert.notStrictEqual(1,1, '1 is strictly equal to 1');
-}catch (err) {
-  console.error(`Error: ${err.message}`);
-}
+app.get('/', (req,res)=>{
+  res.send('hello world form express.js');
+});
+app.listen(port, ()=>{
+  console.log(`exppress server running at http://localhost:${port}`);
+});

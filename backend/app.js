@@ -2,12 +2,13 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.get('/users/:userId/:booksId', (req, res)=>{
-  res.send(`User ID : ${req.params.userId}, Book ID : ${req.params.booksId}`);
-
+// Route handling query parameters
+app.get('/search', (req, res) => {
+  // Access query parameters using req.query
+  const { q, category } = req.query;
+  res.send(`Search query: ${q}, Category: ${category || 'none'}`);
 });
 
-app.listen(port, ()=>{
-  console.log(`example app listening at http://localhost:${port}`);
-
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
 });

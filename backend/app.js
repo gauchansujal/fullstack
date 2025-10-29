@@ -1,29 +1,20 @@
 const express = require('express');
 const app = express();
+const path = require('path');
 const port = 8080;
 
-app.get('/error', (req,res)=>{
-  throw new Error('something went wrong');
+// Serve static files
+app.use(express.static('public'));
+app.use('/static', express.static('public'));
+app.use('/assets', express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Static Files</h1>
+    <img src="/images/photo-000.png" alt="Logo">
+  `);
 });
 
-app.get('/async-error', (req,res)=>{
-  setTimeout(()=>{
-    try{
-      const result = nonExistentFunction(); 
-      res.send(result);
-    }
-    catch (error){
-      next(error);
-
-    }
-
-  },100);
-
-});
-app.use((err, req, res, next)=>{
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-app.listen(port, ()=>{
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });

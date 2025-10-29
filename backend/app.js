@@ -1,18 +1,29 @@
 const express = require('express');
 const app = express();
-const port =  8080;
+const port = 8080;
 
-app.use(express.json());
-
-app.use(express.urlencoded({extended: true}));
-
-app.use(express.static('public'));
-
-app.post('/api/users', (req, res)=>{
-  console.log(req.body);
-  res.status(201).json({message: 'User created', user: req.body});
+app.get('/error', (req,res)=>{
+  throw new Error('something went wrong');
 });
 
+app.get('/async-error', (req,res)=>{
+  setTimeout(()=>{
+    try{
+      const result = nonExistentFunction(); 
+      res.send(result);
+    }
+    catch (error){
+      next(error);
+
+    }
+
+  },100);
+
+});
+app.use((err, req, res, next)=>{
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 app.listen(port, ()=>{
   console.log(`Example app listening at http://localhost:${port}`);
 });

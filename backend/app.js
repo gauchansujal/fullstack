@@ -1,20 +1,21 @@
 const express = require('express');
 const app = express();
-const path = require('path');
 const port = 8080;
 
-// Serve static files
-app.use(express.static('public'));
-app.use('/static', express.static('public'));
-app.use('/assets', express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
-  res.send(`
-    <h1>Static Files</h1>
-    <img src="/images/photo-000.png" alt="Logo">
-  `);
+app.set('views', './view');
+
+app.get('/', (req, res)=>{
+  const data = {
+    title : 'express templates eample',
+    message : 'hello world form ejs',
+    items : ['item 1', 'item 2', 'item 3']
+  };
+
+  res.render('index', data);
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(port, ()=>{
+  console.log(`http://localhost:${port}`);
 });

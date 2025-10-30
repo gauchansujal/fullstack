@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= title %></title>
+  <title>Loop Example</title>
 </head>
 <body>
-  <h1><%= title %></h1>
-  <p><%= message %></p>
+  <h1>Printing "Hello World" 10 times:</h1>
 
-  <h2>Items:</h2>
   <ul>
-    <% items.forEach(function(item) { %>
-      <li><%= item %></li>
-    <% }); %>
+    <% for(let i = 1; i <= count; i++) { %>
+      <li>Hello World (<%= i %>)</li>
+    <% } %>
   </ul>
 </body>
 </html>

@@ -2,18 +2,19 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.set('view engine', 'ejs');
+app.use((req, res, next)=>{
+  console.log('Middleware 1 : thsi always runs');
+  next();
 
-app.set('views', './view');
+});
+
+app.use((req, res, next)=>{
+  console.log('Middleware 2 : this also always runs');
+  next();
+});
 
 app.get('/', (req, res)=>{
-  const data = {
-    title : 'express templates eample',
-    message : 'hello world form ejs',
-    items : ['item 1', 'item 2', 'item 3']
-  };
-
-  res.render('index', data);
+  res.send('hello world');
 });
 
 app.listen(port, ()=>{

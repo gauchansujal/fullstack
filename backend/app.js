@@ -2,25 +2,29 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-function authenticate(req, res, next){
-    const authHeader = req.headers.authorization;
+app.use(express.json());
 
-    if(!authHeader) {
-        return res.status(401).send('authentication required');
+function validateUsersCreation(req, res, next){
+    const {username, email, password} =req.body;
+
+    if(!username || username.length < 3) {
+        return res.status(400).json({error: 'Username must be at least 3'});
+
+
     }
 
-    const token = authHeader.split('')[1];
-
-    if (token === 'secret-token'){
-        req.user = {id: 123, username: 'john'};
-        next();
-    }else{
-        res.status(403).send('invalid token');
+    if (!email || !email.includes('@')){
+        return res.status(400).json({error: 'Valid email is required'});
     }
+
+    if(!password || password.length < 6){
+        return res.status(400).json({error: 'password must be at least 6 charactes'});
+    }
+    next();
+
 }
-
-app.get('/api/protected', authenticate, (req, res)=>{
-    res.json({message: 'protected data', user: req.user});
+app.post('/api/users', validateUsersCreation, (req, res)=>{
+    res.status(201).json({message: 'users created sucessfully'});
 });
 
 app.listen(port, ()=>{

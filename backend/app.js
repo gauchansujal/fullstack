@@ -2,31 +2,25 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.use(express.json());
+app.use (express.json());
+app.get('/error-demo',(req, res, next)=>{
+    try {
+        throw new Error('Something went wrong!');
 
-function validateUsersCreation(req, res, next){
-    const {username, email, password} =req.body;
-
-    if(!username || username.length < 3) {
-        return res.status(400).json({error: 'Username must be at least 3'});
-
-
+    }catch (error){
+        next (error);
     }
+});
 
-    if (!email || !email.includes('@')){
-        return res.status(400).json({error: 'Valid email is required'});
-    }
-
-    if(!password || password.length < 6){
-        return res.status(400).json({error: 'password must be at least 6 charactes'});
-    }
-    next();
-
-}
-app.post('/api/users', validateUsersCreation, (req, res)=>{
-    res.status(201).json({message: 'users created sucessfully'});
+app.use((err, req, res,next)=>{
+    console.error(err.stack);
+    res.status(500).json({
+        message: 'an error occured',
+        error: process.env.NODE_ENV === 'production'? {}:err
+    });
 });
 
 app.listen(port, ()=>{
     console.log(`http://localhost:${port}`);
+
 });

@@ -3,23 +3,29 @@ const app = express();
 const port = 8080;
 
 app.use (express.json());
-app.get('/error-demo',(req, res, next)=>{
-    try {
-        throw new Error('Something went wrong!');
 
+
+app.get('/async-data', async(req,resizeBy, next)=>{
+    try{
+        const data = await fetchDataFromDatabase();
+        res.json(data);
     }catch (error){
-        next (error);
+        next(error);
+
     }
 });
 
-app.use((err, req, res,next)=>{
-    console.error(err.stack);
-    res.status(500).json({
-        message: 'an error occured',
-        error: process.env.NODE_ENV === 'production'? {}:err
-    });
-});
+function asyncHandler(fn){
+    return (req, res, next)=>{
+        Promise.resolve(fn(req, res, next)).catch (next);
+    };
 
+}
+
+app.get('/better-async', asyncHandler(async (req, res)=>{
+    const data = await fetchDataFromDatabase();
+    res.json(data);
+}));
 app.listen(port, ()=>{
     console.log(`http://localhost:${port}`);
 

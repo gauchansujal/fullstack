@@ -2,31 +2,34 @@ const express = require('express');
 const app = express();
 const port = 8080;
 
-app.use (express.json());
-
-
-app.get('/async-data', async(req,resizeBy, next)=>{
-    try{
-        const data = await fetchDataFromDatabase();
-        res.json(data);
-    }catch (error){
-        next(error);
-
-    }
+// This middleware will run first
+app.use((req, res, next) => {
+  console.log('First middleware');
+  next();
 });
 
-function asyncHandler(fn){
-    return (req, res, next)=>{
-        Promise.resolve(fn(req, res, next)).catch (next);
-    };
+// This middleware will run for /users paths only
+app.use('/users', (req, res, next) => {
+  console.log('Users middleware');
+  next();
+});
 
-}
+// This route handler will run when matched
+app.get('/users', (req, res) => {
+  res.send('Users list');
+});
 
-app.get('/better-async', asyncHandler(async (req, res)=>{
-    const data = await fetchDataFromDatabase();
-    res.json(data);
-}));
-app.listen(port, ()=>{
-    console.log(`http://localhost:${port}`);
+// This middleware will never run for successfully matched routes
+app.use((req, res, next) => {
+  console.log('This will not run for matched routes');
+  next();
+});
 
+// This is a "catch-all" middleware for unmatched routes
+app.use((req, res) => {
+  res.status(404).send('Not found');
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
 });

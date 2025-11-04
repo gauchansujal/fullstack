@@ -1,35 +1,17 @@
 const express = require('express');
 const app = express();
+const usersRoutes = require('./Routes/users');
 const port = 8080;
+const mongoose = require('mongoose');
 
-// This middleware will run first
-app.use((req, res, next) => {
-  console.log('First middleware');
-  next();
-});
+app.use(express.json());
+app.use('/api/users', usersRoutes);
 
-// This middleware will run for /users paths only
-app.use('/users', (req, res, next) => {
-  console.log('Users middleware');
-  next();
-});
+// Connect to MongoDB
+mongoose.connect('mongodb://127.0.0.1:27017/fullstackDB')
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// This route handler will run when matched
-app.get('/users', (req, res) => {
-  res.send('Users list');
-});
-
-// This middleware will never run for successfully matched routes
-app.use((req, res, next) => {
-  console.log('This will not run for matched routes');
-  next();
-});
-
-// This is a "catch-all" middleware for unmatched routes
-app.use((req, res) => {
-  res.status(404).send('Not found');
-});
-
-app.listen(port, () => {
+app.listen(port, ()=>{
   console.log(`http://localhost:${port}`);
 });
